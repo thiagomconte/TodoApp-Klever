@@ -6,14 +6,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.data.app.remote.TokenInterceptor
 import com.example.data.app.util.Constants.TOKEN
 import com.example.data.app.util.Constants.USER_PREFERENCES
 import com.example.data.app.util.GlobalNavigator
 import com.example.data.app.util.GlobalNavigatorHandler
+import com.example.todoapp.navgraph.NavGraph
 import com.example.todoapp.ui.theme.TodoAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -33,7 +31,7 @@ class MainActivity : ComponentActivity(), GlobalNavigatorHandler {
             TodoAppTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-                    Greeting("Android")
+                    NavGraph()
                 }
             }
         }
@@ -51,18 +49,5 @@ class MainActivity : ComponentActivity(), GlobalNavigatorHandler {
     override fun onStop() {
         super.onStop()
         GlobalNavigator.unregisterHandler()
-    }
-}
-
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    TodoAppTheme {
-        Greeting("Android")
     }
 }

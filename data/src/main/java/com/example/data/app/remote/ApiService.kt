@@ -3,10 +3,8 @@ package com.example.data.app.remote
 import com.example.data.app.remote.entity.SuccessResponse
 import com.example.data.app.remote.entity.todo.ApiTodo
 import com.example.data.app.remote.entity.todo.response.GetTodosResponse
-import com.example.data.app.remote.entity.user.ApiUser
 import com.example.data.app.remote.entity.user.request.RegisterUserRequest
 import com.example.data.app.remote.entity.user.response.LoginResponse
-import retrofit2.Response
 import retrofit2.http.*
 
 interface ApiService {
