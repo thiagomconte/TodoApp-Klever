@@ -1,11 +1,15 @@
 package com.example.data.app.repository
 
+import com.example.data.app.remote.ApiService
 import com.example.domain.app.boundary.TodoRepository
 import com.example.domain.app.entity.Todo
 import com.example.domain.app.util.Resource
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class TodoRepositoryImpl : TodoRepository {
+class TodoRepositoryImpl @Inject constructor(
+    apiService: ApiService
+) : TodoRepository {
     override suspend fun getTodos(): Flow<Resource<List<Todo>>> {
         TODO("Not yet implemented")
     }
