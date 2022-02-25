@@ -1,5 +1,6 @@
 package com.example.data.app.remote.entity.todo
 
+import com.example.domain.app.entity.Todo
 import com.google.gson.annotations.SerializedName
 
 data class ApiTodo(
@@ -12,3 +13,7 @@ data class ApiTodo(
     @SerializedName("completed")
     val completed: Boolean
 )
+
+fun ApiTodo.toTodo(id: String, title: String, description: String, completed: Boolean): Todo {
+    return Todo(id, title, description, completed)
+}

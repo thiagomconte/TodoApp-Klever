@@ -39,6 +39,12 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideTokenInterceptor(): TokenInterceptor {
+        return TokenInterceptor()
+    }
+
+    @Provides
+    @Singleton
     fun provideApiService(retrofit: Retrofit): ApiService {
         return retrofit.create(ApiService::class.java)
     }

@@ -5,6 +5,6 @@ import com.example.domain.app.util.Resource
 import kotlinx.coroutines.flow.Flow
 
 interface UserRepository {
-    suspend fun register(user: User): Flow<Resource<String>>
+    suspend fun register(name: String, email: String, password: String): Flow<Resource<String>>
     suspend fun login(email: String, password: String): Flow<Resource<User>>
 }
