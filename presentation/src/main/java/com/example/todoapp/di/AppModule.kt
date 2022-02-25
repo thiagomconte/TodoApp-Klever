@@ -3,6 +3,7 @@ package com.example.todoapp.di
 import android.app.Application
 import android.content.Context
 import com.example.data.app.remote.ApiService
+import com.example.data.app.remote.TokenInterceptor
 import com.example.data.app.repository.TodoRepositoryImpl
 import com.example.data.app.repository.UserRepositoryImpl
 import com.example.data.app.util.Constants.BASE_URL
@@ -12,6 +13,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
@@ -22,9 +24,17 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(): Retrofit {
+    fun provideOkhttp(tokenInterceptor: TokenInterceptor): OkHttpClient {
+        val client = OkHttpClient.Builder()
+        client.addInterceptor(tokenInterceptor)
+        return client.build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder().addConverterFactory(GsonConverterFactory.create())
-            .baseUrl(BASE_URL).build()
+            .baseUrl(BASE_URL).client(okHttpClient).build()
     }
 
     @Provides
