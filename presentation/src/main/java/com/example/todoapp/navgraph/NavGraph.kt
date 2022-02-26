@@ -2,14 +2,18 @@ package com.example.todoapp.navgraph
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.todoapp.util.Constants
+import com.example.todoapp.util.Constants.Routes.ADD_EDIT_TODO
 import com.example.todoapp.util.Constants.Routes.AUTHENTICATED
 import com.example.todoapp.util.Constants.Routes.LOGIN
 import com.example.todoapp.util.Constants.Routes.TODO_LIST
+import com.example.todoapp.view.addedittodo.components.AddEditTodoScreen
 import com.example.todoapp.view.login.components.LoginScreen
 import com.example.todoapp.view.register.components.RegisterScreen
 import com.example.todoapp.view.todolist.components.TodoListScreen
@@ -39,6 +43,17 @@ fun NavGraph(token: String, name: String) {
                 TodoListScreen(onNavigate = {
                     navController.navigate(it.route)
                 })
+            }
+            composable(
+                "$ADD_EDIT_TODO?id={id}",
+                arguments = listOf(
+                    navArgument("id") {
+                        type = NavType.StringType
+                        defaultValue = ""
+                    }
+                )
+            ) {
+                AddEditTodoScreen(onPopBackStack = { navController.popBackStack() })
             }
         }
     }

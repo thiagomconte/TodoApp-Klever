@@ -8,6 +8,7 @@ import com.example.domain.app.entity.Todo
 import com.example.domain.app.util.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import java.io.IOException
 import java.lang.Exception
 import javax.inject.Inject
 
@@ -21,12 +22,13 @@ class TodoRepositoryImpl @Inject constructor(
                 emit(
                     Resource.Success(
                         response.todos.map {
-                            it.toTodo(it.id, it.title, it.description, it.completed)
+                            it.toTodo(it)
                         }
                     )
                 )
             } catch (e: Exception) {
-                emit(Resource.Error("Could not get todos."))
+                if (e is IOException) emit(Resource.Error("Could not reach server."))
+                else emit(Resource.Error("Could not get tasks."))
             }
         }
     }
@@ -39,7 +41,8 @@ class TodoRepositoryImpl @Inject constructor(
                     Resource.Success(response.msg)
                 )
             } catch (e: Exception) {
-                emit(Resource.Error("Could not create todos."))
+                if (e is IOException) emit(Resource.Error("Could not reach server."))
+                else emit(Resource.Error("Could not create task."))
             }
         }
     }
@@ -48,13 +51,12 @@ class TodoRepositoryImpl @Inject constructor(
         return flow {
             try {
                 val response = apiService.getTodoById(id)
-                with(response) {
-                    emit(
-                        Resource.Success(toTodo(id, title, description, completed))
-                    )
-                }
+                emit(
+                    Resource.Success(response.toTodo(response))
+                )
             } catch (e: Exception) {
-                emit(Resource.Error("Could not get todo."))
+                if (e is IOException) emit(Resource.Error("Could not reach server."))
+                else emit(Resource.Error("Could not get task."))
             }
         }
     }
@@ -69,7 +71,8 @@ class TodoRepositoryImpl @Inject constructor(
                     )
                 }
             } catch (e: Exception) {
-                emit(Resource.Error("Could not update todo."))
+                if (e is IOException) emit(Resource.Error("Could not reach server."))
+                else emit(Resource.Error("Could not update task."))
             }
         }
     }
@@ -82,7 +85,8 @@ class TodoRepositoryImpl @Inject constructor(
                     Resource.Success(response.msg)
                 )
             } catch (e: Exception) {
-                emit(Resource.Error("Could not delete todo."))
+                if (e is IOException) emit(Resource.Error("Could not reach server."))
+                else emit(Resource.Error("Could not delete task."))
             }
         }
     }

@@ -7,6 +7,7 @@ import com.example.domain.app.entity.User
 import com.example.domain.app.util.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import java.io.IOException
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(
@@ -19,12 +20,13 @@ class UserRepositoryImpl @Inject constructor(
         password: String
     ): Flow<Resource<String>> {
         return flow {
-//            try {
+            try {
                 val response = apiService.register(RegisterUserRequest(name, email, password))
                 emit(Resource.Success(response.msg))
-//            } catch (e: Exception) {
-//                emit(Resource.Error("Could not complete operation."))
-//            }
+            } catch (e: Exception) {
+                if (e is IOException) emit(Resource.Error("Could not reach server."))
+                else emit(Resource.Error("Could not complete operation."))
+            }
         }
     }
 
@@ -39,7 +41,8 @@ class UserRepositoryImpl @Inject constructor(
                     emit(Resource.Success(User(name, this.email, token)))
                 }
             } catch (e: Exception) {
-                emit(Resource.Error("Incorrect credentials."))
+                if (e is IOException) emit(Resource.Error("Could not reach server."))
+                else emit(Resource.Error("Incorrect credentials."))
             }
         }
     }

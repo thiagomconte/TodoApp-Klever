@@ -24,4 +24,8 @@
     <string name="confirm">Confirm</string>
     <string name="task_list">Task List</string>
 
+    <!-- AddEditTodo Screen -->
+    <string name="description_validator">Description must be between 20 and 200 characters long!</string>
+    <string name="title_validator">Title must be al least 5 characters long!</string>
+
 </resources>
