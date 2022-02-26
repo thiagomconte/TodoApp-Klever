@@ -1,6 +1,7 @@
 package com.example.todoapp.view.login
 
 import android.content.Context
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.app.util.Constants.EMAIL
@@ -9,6 +10,7 @@ import com.example.data.app.util.Constants.TOKEN
 import com.example.data.app.util.Constants.USER_PREFERENCES
 import com.example.domain.app.boundary.UserRepository
 import com.example.domain.app.util.Resource
+import com.example.todoapp.util.Common
 import com.example.todoapp.util.Constants.Routes.TODO_LIST
 import com.example.todoapp.util.UiEvent
 import com.example.todoapp.util.ViewState
@@ -60,6 +62,28 @@ class LoginViewModel @Inject constructor(
     private fun sendEvent(event: UiEvent) {
         viewModelScope.launch {
             _channel.send(event)
+        }
+    }
+
+    fun validatePassword(textFieldValue: TextFieldValue, onPasswordError: (Boolean) -> Unit) {
+        onPasswordError(textFieldValue.text.isBlank())
+    }
+
+    fun validateEmail(textFieldValue: TextFieldValue, onEmailError: (Boolean) -> Unit) {
+        onEmailError(!Common.isEmailValid(textFieldValue.text))
+    }
+
+    fun validate(
+        email: String,
+        password: String,
+        onEmailError: (Boolean) -> Unit,
+        onPasswordError: (Boolean) -> Unit,
+        onValidate: () -> Unit
+    ) {
+        onEmailError(!Common.isEmailValid(email))
+        onPasswordError(password.isBlank())
+        if (email.isNotBlank() && password.isNotBlank()) {
+            onValidate()
         }
     }
 }

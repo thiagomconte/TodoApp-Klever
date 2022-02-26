@@ -9,4 +9,11 @@
     <string name="register">Register</string>
     <string name="password_required">Password is required.</string>
 
+    <!-- Register Screen -->
+    <string name="confirm_register">Register</string>
+    <string name="back">Back</string>
+    <string name="name">Name</string>
+    <string name="name_validator">Name must be between 3 and 30 characters long!</string>
+    <string name="password_validator">Password must be between 8 and 20 characters long!</string>
+
 </resources>

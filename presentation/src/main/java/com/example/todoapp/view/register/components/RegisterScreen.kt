@@ -1,19 +1,18 @@
-package com.example.todoapp.view.login.components
+package com.example.todoapp.view.register.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -26,36 +25,37 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.todoapp.R
 import com.example.todoapp.ui.theme.DarkBlue
 import com.example.todoapp.ui.theme.RobotoRegular
-import com.example.todoapp.util.Constants.Routes.REGISTER
 import com.example.todoapp.util.UiEvent
 import com.example.todoapp.util.ViewState
 import com.example.todoapp.util.components.AlertDialogComponent
 import com.example.todoapp.util.components.ErrorText
 import com.example.todoapp.util.components.LoadingComponent
 import com.example.todoapp.util.components.NormalText
-import com.example.todoapp.view.login.LoginEvent
-import com.example.todoapp.view.login.LoginViewModel
+import com.example.todoapp.view.register.RegisterEvent
+import com.example.todoapp.view.register.RegisterViewModel
 import kotlinx.coroutines.flow.collect
 
 @Composable
-fun LoginScreen(
-    onNavigate: (UiEvent.Navigate) -> Unit,
-    viewModel: LoginViewModel = hiltViewModel()
+fun RegisterScreen(
+    onPopBackStack: (UiEvent.PopBackStack) -> Unit,
+    viewModel: RegisterViewModel = hiltViewModel()
 ) {
+    val name = remember { mutableStateOf(TextFieldValue("")) }
     val email = remember { mutableStateOf(TextFieldValue("")) }
     val password = remember { mutableStateOf(TextFieldValue("")) }
+    val loading = remember { mutableStateOf(false) }
     val passwordVisibility = remember { mutableStateOf(false) }
+    val nameError = remember { mutableStateOf(false) }
     val emailError = remember { mutableStateOf(false) }
     val passwordError = remember { mutableStateOf(false) }
     val showMsgError = remember { mutableStateOf(false) }
     val msgError = remember { mutableStateOf("") }
-    val context = LocalContext.current
-    val loginState = viewModel.loginState.collectAsState(ViewState.Initial).value
+    val registerState = viewModel.registerState.collectAsState(ViewState.Initial).value
 
     LaunchedEffect(Unit) {
         viewModel.channel.collect { event ->
             when (event) {
-                is UiEvent.Navigate -> onNavigate(UiEvent.Navigate(event.route))
+                is UiEvent.PopBackStack -> onPopBackStack(UiEvent.PopBackStack)
                 is UiEvent.ShowAlertDialog -> {
                     showMsgError.value = true
                     msgError.value = event.msg
@@ -71,22 +71,22 @@ fun LoginScreen(
         }
     }
 
-    if (loginState is ViewState.Loading) {
+    if (registerState is ViewState.Loading) {
         LoadingComponent()
     }
-
     Column(
         modifier = Modifier
+            .verticalScroll(rememberScrollState())
             .fillMaxSize()
             .background(color = DarkBlue),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Icon(
-            imageVector = Icons.Default.AccountCircle,
+            painter = painterResource(id = R.drawable.ic_person_add_black_48dp),
             contentDescription = "Account icon",
             modifier = Modifier
                 .size(200.dp)
-                .align(CenterHorizontally),
+                .align(Alignment.CenterHorizontally),
             tint = Color.White
         )
         Box(
@@ -97,9 +97,37 @@ fun LoginScreen(
                 .padding(horizontal = 16.dp),
         ) {
             Column(
-                modifier = Modifier.padding(top = 16.dp),
+                modifier = Modifier.padding(vertical = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+                OutlinedTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                    label = {
+                        NormalText(text = stringResource(id = R.string.name))
+                    },
+                    shape = RoundedCornerShape(20.dp),
+                    value = name.value,
+                    onValueChange = { value ->
+                        viewModel.validateName(value, onNameError = {
+                            nameError.value = it
+                        })
+                        name.value = value
+                    },
+                    colors = TextFieldDefaults.textFieldColors(
+                        backgroundColor = Color.Transparent,
+                        unfocusedLabelColor = DarkBlue,
+                        focusedLabelColor = DarkBlue,
+                        cursorColor = DarkBlue,
+                        focusedIndicatorColor = if (nameError.value) Color.Red else DarkBlue,
+                        unfocusedIndicatorColor = if (nameError.value) Color.Red else DarkBlue,
+                        textColor = DarkBlue,
+                    ),
+                    textStyle = TextStyle(fontFamily = RobotoRegular)
+                )
+                if (nameError.value) {
+                    ErrorText(text = stringResource(id = R.string.name_validator))
+                }
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
@@ -109,7 +137,9 @@ fun LoginScreen(
                     shape = RoundedCornerShape(20.dp),
                     value = email.value,
                     onValueChange = { value ->
-                        viewModel.validateEmail(value, onEmailError = { emailError.value = it })
+                        viewModel.validateEmail(value, onEmailError = {
+                            emailError.value = it
+                        })
                         email.value = value
                     },
                     colors = TextFieldDefaults.textFieldColors(
@@ -168,23 +198,34 @@ fun LoginScreen(
                     textStyle = TextStyle(fontFamily = RobotoRegular)
                 )
                 if (passwordError.value) {
-                    ErrorText(text = stringResource(id = R.string.password_required))
+                    ErrorText(text = stringResource(id = R.string.password_validator))
                 }
                 Button(
                     onClick = {
-                        viewModel.validate(email.value.text, password.value.text, onEmailError = {
-                            emailError.value = it
-                        }, onPasswordError = {
-                            passwordError.value = it
-                        }, onValidate = {
-                            viewModel.onEvent(
-                                LoginEvent.LoginUser(
-                                    email.value.text,
-                                    password.value.text
-                                ),
-                                context
-                            )
-                        })
+                        viewModel.validate(
+                            email.value.text,
+                            password.value.text,
+                            name.value.text,
+                            onNameError = {
+                                nameError.value = it
+                            },
+                            onPasswordError = {
+                                passwordError.value = it
+                            },
+                            onEmailError = {
+                                emailError.value = it
+                            },
+                            onValidate = {
+                                viewModel.onEvent(
+                                    RegisterEvent.RegisterUser(
+                                        name.value.text,
+                                        email.value.text,
+                                        password.value.text
+                                    )
+                                )
+                                loading.value = true
+                            }
+                        )
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -195,13 +236,13 @@ fun LoginScreen(
                     )
                 ) {
                     Text(
-                        text = stringResource(id = R.string.login),
+                        text = stringResource(id = R.string.confirm_register),
                         modifier = Modifier.padding(vertical = 4.dp),
                         style = MaterialTheme.typography.h6
                     )
                 }
                 OutlinedButton(
-                    onClick = { onNavigate(UiEvent.Navigate(REGISTER)) },
+                    onClick = { onPopBackStack(UiEvent.PopBackStack) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 16.dp),
@@ -212,7 +253,7 @@ fun LoginScreen(
                     )
                 ) {
                     Text(
-                        text = stringResource(id = R.string.register),
+                        text = stringResource(id = R.string.back),
                         modifier = Modifier.padding(vertical = 4.dp),
                         style = MaterialTheme.typography.h6
                     )

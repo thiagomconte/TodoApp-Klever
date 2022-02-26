@@ -19,12 +19,12 @@ class UserRepositoryImpl @Inject constructor(
         password: String
     ): Flow<Resource<String>> {
         return flow {
-            try {
+//            try {
                 val response = apiService.register(RegisterUserRequest(name, email, password))
                 emit(Resource.Success(response.msg))
-            } catch (e: Exception) {
-                emit(Resource.Error("Could not complete operation."))
-            }
+//            } catch (e: Exception) {
+//                emit(Resource.Error("Could not complete operation."))
+//            }
         }
     }
 
