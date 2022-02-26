@@ -19,5 +19,9 @@
     <!-- TodoList Screen -->
     <string name="start_adding_task">Start adding tasks.</string>
     <string name="error_fetch_task">Sorry. We couldn\'t fetch your tasks</string>
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm</string>
+    <string name="task_list">Task List</string>
 
 </resources>

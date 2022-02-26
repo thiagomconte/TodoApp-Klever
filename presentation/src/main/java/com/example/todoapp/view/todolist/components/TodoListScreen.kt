@@ -1,8 +1,10 @@
 package com.example.todoapp.view.todolist.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -14,17 +16,23 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.todoapp.R
 import com.example.todoapp.ui.theme.DarkBlue
+import com.example.todoapp.ui.theme.RobotoBold
 import com.example.todoapp.ui.theme.RobotoRegular
 import com.example.todoapp.util.UiEvent
 import com.example.todoapp.util.ViewState
+import com.example.todoapp.util.components.AlertDialogComponent
 import com.example.todoapp.util.components.LoadingComponent
+import com.example.todoapp.util.components.NormalText
 import com.example.todoapp.util.components.TopAppBarComponent
 import com.example.todoapp.view.todolist.TodoListEvent
 import com.example.todoapp.view.todolist.TodoListViewModel
 import kotlinx.coroutines.flow.collect
+import java.util.*
 
 @Composable
 fun TodoListScreen(
@@ -35,6 +43,7 @@ fun TodoListScreen(
     val errorMsg = remember { mutableStateOf("") }
     val showErrorMsg = remember { mutableStateOf(false) }
     val showConfirmDialog = remember { mutableStateOf(false) }
+    val id = remember { mutableStateOf("") }
 
     val getTodosState = viewModel.getTodosState.collectAsState(ViewState.Initial).value
     val deleteTodoState = viewModel.deleteTodoState.collectAsState(ViewState.Initial).value
@@ -53,6 +62,19 @@ fun TodoListScreen(
         }
     }
 
+    if (showErrorMsg.value) {
+        AlertDialogComponent(errorMsg.value, onDismiss = { showErrorMsg.value = false })
+    }
+
+    if (showConfirmDialog.value) OpenDialog(
+        onDismiss = { showConfirmDialog.value = false },
+        onConfirm = {
+            viewModel.onEvent(it)
+            showConfirmDialog.value = false
+        },
+        id = id.value
+    )
+
     Scaffold(
         topBar = { TopAppBarComponent() },
         floatingActionButton = {
@@ -64,7 +86,11 @@ fun TodoListScreen(
             }
         }
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = Color.LightGray)
+        ) {
             when (getTodosState) {
                 is ViewState.Empty -> {
                     Column(
@@ -90,9 +116,23 @@ fun TodoListScreen(
                 is ViewState.Loading -> LoadingComponent()
                 is ViewState.Success -> {
                     LazyColumn() {
+                        item {
+                            Text(
+                                stringResource(R.string.task_list),
+                                fontFamily = RobotoBold,
+                                fontSize = 42.sp,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 16.dp),
+                                textAlign = TextAlign.Center
+                            )
+                        }
                         items(getTodosState.data) { todo ->
                             TodoListItem(
-                                onDeleteTodoClick = { viewModel.onEvent(it) },
+                                onDeleteTodoClick = {
+                                    showConfirmDialog.value = true
+                                    id.value = it.id
+                                },
                                 onEditTodoClick = { viewModel.onEvent(it) },
                                 todo
                             )
@@ -117,6 +157,51 @@ fun TodoListScreen(
                     }
                 }
                 else -> Unit
+            }
+        }
+    }
+}
+
+@Composable
+fun OpenDialog(
+    onDismiss: () -> Unit,
+    onConfirm: (TodoListEvent.DeleteTodoClick) -> Unit,
+    id: String
+) {
+    Dialog(onDismissRequest = { onDismiss() }) {
+        Card(
+            elevation = 8.dp,
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                NormalText(text = stringResource(id = R.string.are_you_sure))
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+
+                    TextButton(
+                        onClick = { onDismiss() },
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = DarkBlue,
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text(text = stringResource(id = R.string.cancel))
+                    }
+                    Spacer(modifier = Modifier.width(4.dp))
+                    TextButton(
+                        onClick = {
+                            onConfirm(TodoListEvent.DeleteTodoClick(id))
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = DarkBlue,
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text(text = stringResource(id = R.string.confirm))
+                    }
+                }
             }
         }
     }

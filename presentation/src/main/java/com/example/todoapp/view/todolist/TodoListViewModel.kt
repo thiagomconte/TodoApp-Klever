@@ -40,7 +40,10 @@ class TodoListViewModel @Inject constructor(
                         _deleteTodoState.value = ViewState.Loading
                     }.collectLatest { resource ->
                         when (resource) {
-                            is Resource.Success -> getTodos()
+                            is Resource.Success -> {
+                                _deleteTodoState.value = ViewState.Success(Unit)
+                                getTodos()
+                            }
                             is Resource.Error -> {
                                 _deleteTodoState.value = ViewState.Error
                                 sendEvent(UiEvent.ShowAlertDialog(resource.error))
