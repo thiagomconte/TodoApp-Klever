@@ -38,6 +38,7 @@ fun AddEditTodoScreen(
     val titleError = remember { mutableStateOf(false) }
     val description = remember { mutableStateOf(TextFieldValue("")) }
     val descriptionError = remember { mutableStateOf(false) }
+    val isChecked = remember { mutableStateOf(false) }
     val state = viewModel.getTodoState.collectAsState(ViewState.Initial).value
     val createUpdateState = viewModel.createUpdateState.collectAsState(ViewState.Initial).value
 
@@ -59,6 +60,7 @@ fun AddEditTodoScreen(
         is ViewState.Success -> {
             title.value = TextFieldValue(state.data.title)
             description.value = TextFieldValue(state.data.description)
+            isChecked.value = state.data.completed
         }
         else -> Unit
     }
@@ -83,7 +85,8 @@ fun AddEditTodoScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .background(color = Color.LightGray)
-                .padding(horizontal = 12.dp)
+                .padding(horizontal = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
                 text = if (state is ViewState.Success) "Update Task" else "Add Task",
@@ -146,6 +149,16 @@ fun AddEditTodoScreen(
             if (descriptionError.value) {
                 ErrorText(text = stringResource(R.string.description_validator))
             }
+            if (state is ViewState.Success) {
+                Row() {
+                    Checkbox(
+                        checked = isChecked.value,
+                        onCheckedChange = { isChecked.value = !isChecked.value },
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                    NormalText(text = "Mark as done")
+                }
+            }
             Button(
                 onClick = {
                     if (state is ViewState.Success) {
@@ -162,7 +175,7 @@ fun AddEditTodoScreen(
                                         state.data.id,
                                         title.value.text,
                                         description.value.text,
-                                        state.data.completed
+                                        isChecked.value
                                     )
                                 )
                             )

@@ -6,22 +6,23 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.domain.app.entity.Todo
 import com.example.todoapp.R
 import com.example.todoapp.ui.theme.DarkBlue
 import com.example.todoapp.ui.theme.RobotoRegular
 import com.example.todoapp.view.todolist.TodoListEvent
 
+@ExperimentalMaterialApi
 @Composable
 fun TodoListItem(
     onDeleteTodoClick: (TodoListEvent.DeleteTodoClick) -> Unit,
@@ -49,9 +50,11 @@ fun TodoListItem(
                 modifier = Modifier.fillMaxWidth(0.9f),
                 text = todo.title,
                 fontFamily = RobotoRegular,
-                color = Color.White,
+                color = if (todo.completed) Color.White.copy(0.5f) else Color.White,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                fontSize = 16.sp,
+                style = if (todo.completed) TextStyle(textDecoration = TextDecoration.LineThrough) else TextStyle.Default
             )
             Icon(
                 painter = painterResource(id = R.drawable.ic_delete_black_24dp),
