@@ -16,4 +16,8 @@
     <string name="name_validator">Name must be between 3 and 30 characters long!</string>
     <string name="password_validator">Password must be between 8 and 20 characters long!</string>
 
+    <!-- TodoList Screen -->
+    <string name="start_adding_task">Start adding tasks.</string>
+    <string name="error_fetch_task">Sorry. We couldn\'t fetch your tasks</string>
+
 </resources>

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.data.app.remote.TokenInterceptor
 import com.example.data.app.util.Constants.EMAIL
 import com.example.data.app.util.Constants.NAME
 import com.example.data.app.util.Constants.TOKEN
@@ -11,7 +12,7 @@ import com.example.data.app.util.Constants.USER_PREFERENCES
 import com.example.domain.app.boundary.UserRepository
 import com.example.domain.app.util.Resource
 import com.example.todoapp.util.Common
-import com.example.todoapp.util.Constants.Routes.TODO_LIST
+import com.example.todoapp.util.Constants.Routes.AUTHENTICATED
 import com.example.todoapp.util.UiEvent
 import com.example.todoapp.util.ViewState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,6 +25,9 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val repo: UserRepository,
 ) : ViewModel() {
+
+    @Inject
+    lateinit var tokenInterceptor: TokenInterceptor
 
     private val _channel = Channel<UiEvent>()
     val channel = _channel.receiveAsFlow()
@@ -46,7 +50,8 @@ class LoginViewModel @Inject constructor(
                                 putString(NAME, resource.data.name)
                                 apply()
                             }
-                            sendEvent(UiEvent.Navigate(TODO_LIST))
+                            tokenInterceptor.token = resource.data.token
+                            sendEvent(UiEvent.Navigate(AUTHENTICATED))
                         }
                         is Resource.Error -> {
                             _loginState.value = ViewState.Error
