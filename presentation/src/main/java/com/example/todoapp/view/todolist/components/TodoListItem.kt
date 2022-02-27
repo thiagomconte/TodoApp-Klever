@@ -31,10 +31,10 @@ fun TodoListItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp, top = 0.dp, bottom = 24.dp)
             .clickable {
                 onEditTodoClick(TodoListEvent.EditTodoClick(todo.id))
-            }
-            .padding(start = 16.dp, end = 16.dp, top = 0.dp, bottom = 24.dp),
+            },
         backgroundColor = DarkBlue,
         shape = RoundedCornerShape(32.dp),
         elevation = 16.dp

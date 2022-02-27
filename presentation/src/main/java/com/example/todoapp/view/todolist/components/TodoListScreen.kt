@@ -31,6 +31,8 @@ import com.example.todoapp.util.components.NormalText
 import com.example.todoapp.util.components.TopAppBarComponent
 import com.example.todoapp.view.todolist.TodoListEvent
 import com.example.todoapp.view.todolist.TodoListViewModel
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.flow.collect
 
 @Composable
@@ -46,6 +48,7 @@ fun TodoListScreen(
 
     val getTodosState = viewModel.getTodosState.collectAsState(ViewState.Initial).value
     val deleteTodoState = viewModel.deleteTodoState.collectAsState(ViewState.Initial).value
+    val isRefreshing by viewModel.isRefreshing.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.getTodos()
@@ -60,6 +63,8 @@ fun TodoListScreen(
             }
         }
     }
+
+    if (deleteTodoState is ViewState.Loading) LoadingComponent()
 
     if (showErrorMsg.value) {
         AlertDialogComponent(errorMsg.value, onDismiss = { showErrorMsg.value = false })
@@ -85,77 +90,83 @@ fun TodoListScreen(
             }
         }
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(color = Color.LightGray)
+        SwipeRefresh(
+            state = rememberSwipeRefreshState(isRefreshing),
+            onRefresh = { viewModel.refresh() },
         ) {
-            when (getTodosState) {
-                is ViewState.Empty -> {
-                    Column(
-                        modifier = Modifier
-                            .align(Alignment.Center)
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = Color.LightGray)
+            ) {
 
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_add_task_black_24dp),
-                            contentDescription = "Empty list",
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            tint = DarkBlue,
-                        )
-                        Text(
-                            text = stringResource(R.string.start_adding_task),
-                            textAlign = TextAlign.Center,
-                            color = DarkBlue,
-                            fontFamily = RobotoRegular,
-                            modifier = Modifier.padding(top = 12.dp)
-                        )
-                    }
-                }
-                is ViewState.Loading -> LoadingComponent()
-                is ViewState.Success -> {
-                    LazyColumn() {
-                        item {
+                when (getTodosState) {
+                    is ViewState.Empty -> {
+                        Column(
+                            modifier = Modifier
+                                .align(Alignment.Center)
+
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_add_task_black_24dp),
+                                contentDescription = "Empty list",
+                                modifier = Modifier.align(Alignment.CenterHorizontally),
+                                tint = DarkBlue,
+                            )
                             Text(
-                                stringResource(R.string.task_list),
-                                fontFamily = RobotoBold,
-                                fontSize = 42.sp,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 16.dp),
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                        items(getTodosState.data) { todo ->
-                            TodoListItem(
-                                onDeleteTodoClick = {
-                                    showConfirmDialog.value = true
-                                    id.value = it.id
-                                },
-                                onEditTodoClick = { viewModel.onEvent(it) },
-                                todo
+                                text = stringResource(R.string.start_adding_task),
+                                textAlign = TextAlign.Center,
+                                color = DarkBlue,
+                                fontFamily = RobotoRegular,
+                                modifier = Modifier.padding(top = 12.dp)
                             )
                         }
                     }
-                }
-                is ViewState.Error -> {
-                    Column(modifier = Modifier.align(Alignment.Center)) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_error_outline_black_24dp),
-                            contentDescription = "Error",
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            tint = DarkBlue
-                        )
-                        Text(
-                            text = stringResource(R.string.error_fetch_task),
-                            textAlign = TextAlign.Center,
-                            color = DarkBlue,
-                            fontFamily = RobotoRegular,
-                            modifier = Modifier.padding(top = 12.dp)
-                        )
+                    is ViewState.Loading -> LoadingComponent()
+                    is ViewState.Success -> {
+                        LazyColumn() {
+                            item {
+                                Text(
+                                    stringResource(R.string.task_list),
+                                    fontFamily = RobotoBold,
+                                    fontSize = 42.sp,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 16.dp),
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                            items(getTodosState.data) { todo ->
+                                TodoListItem(
+                                    onDeleteTodoClick = {
+                                        showConfirmDialog.value = true
+                                        id.value = it.id
+                                    },
+                                    onEditTodoClick = { viewModel.onEvent(it) },
+                                    todo
+                                )
+                            }
+                        }
                     }
+                    is ViewState.Error -> {
+                        Column(modifier = Modifier.align(Alignment.Center)) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_error_outline_black_24dp),
+                                contentDescription = "Error",
+                                modifier = Modifier.align(Alignment.CenterHorizontally),
+                                tint = DarkBlue
+                            )
+                            Text(
+                                text = stringResource(R.string.error_fetch_task),
+                                textAlign = TextAlign.Center,
+                                color = DarkBlue,
+                                fontFamily = RobotoRegular,
+                                modifier = Modifier.padding(top = 12.dp)
+                            )
+                        }
+                    }
+                    else -> Unit
                 }
-                else -> Unit
             }
         }
     }

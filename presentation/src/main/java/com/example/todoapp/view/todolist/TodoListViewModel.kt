@@ -30,6 +30,18 @@ class TodoListViewModel @Inject constructor(
         MutableStateFlow(ViewState.Initial)
     val deleteTodoState: StateFlow<ViewState<Unit>> get() = _deleteTodoState
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean>
+        get() = _isRefreshing.asStateFlow()
+
+    fun refresh() {
+        viewModelScope.launch {
+            _isRefreshing.emit(true)
+            getTodos()
+            _isRefreshing.emit(false)
+        }
+    }
+
     fun onEvent(event: TodoListEvent) {
         when (event) {
             is TodoListEvent.AddTodoClick -> sendEvent(UiEvent.Navigate(ADD_EDIT_TODO))
