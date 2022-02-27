@@ -35,11 +35,8 @@ fun AddEditTodoScreen(
 
     var errorMsg by remember { mutableStateOf("") }
     var showErrorMsg by remember { mutableStateOf(false) }
-    var title by remember { mutableStateOf(TextFieldValue("")) }
     var titleError by remember { mutableStateOf(false) }
-    var description by remember { mutableStateOf(TextFieldValue("")) }
     var descriptionError by remember { mutableStateOf(false) }
-    var isChecked by remember { mutableStateOf(false) }
     val state = viewModel.getTodoState.collectAsState(ViewState.Initial).value
     val createUpdateState = viewModel.createUpdateState.collectAsState(ViewState.Initial).value
 
@@ -58,11 +55,6 @@ fun AddEditTodoScreen(
 
     when (state) {
         is ViewState.Loading -> LoadingComponent()
-        is ViewState.Success -> {
-            title = TextFieldValue(state.data.title)
-            description = TextFieldValue(state.data.description)
-            isChecked = state.data.completed
-        }
         else -> Unit
     }
 

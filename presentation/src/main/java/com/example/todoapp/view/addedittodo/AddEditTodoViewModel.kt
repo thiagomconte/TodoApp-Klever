@@ -119,6 +119,7 @@ class AddEditTodoViewModel @Inject constructor(
 
     fun validateTitle(onTitleError: (Boolean) -> Unit) {
         onTitleError(!isTitleValid(title))
+
     }
 
     fun validate(
