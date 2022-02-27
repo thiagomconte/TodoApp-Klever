@@ -32,7 +32,6 @@ import com.example.todoapp.util.components.TopAppBarComponent
 import com.example.todoapp.view.todolist.TodoListEvent
 import com.example.todoapp.view.todolist.TodoListViewModel
 import kotlinx.coroutines.flow.collect
-import java.util.*
 
 @Composable
 fun TodoListScreen(

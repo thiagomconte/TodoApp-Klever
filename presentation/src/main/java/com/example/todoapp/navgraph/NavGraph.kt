@@ -19,7 +19,7 @@ import com.example.todoapp.view.register.components.RegisterScreen
 import com.example.todoapp.view.todolist.components.TodoListScreen
 
 @Composable
-fun NavGraph(token: String, name: String) {
+fun NavGraph(token: String) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = LOGIN) {
         composable(LOGIN) {

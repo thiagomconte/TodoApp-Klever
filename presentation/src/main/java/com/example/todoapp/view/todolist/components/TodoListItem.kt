@@ -22,7 +22,6 @@ import com.example.todoapp.ui.theme.DarkBlue
 import com.example.todoapp.ui.theme.RobotoRegular
 import com.example.todoapp.view.todolist.TodoListEvent
 
-@ExperimentalMaterialApi
 @Composable
 fun TodoListItem(
     onDeleteTodoClick: (TodoListEvent.DeleteTodoClick) -> Unit,
