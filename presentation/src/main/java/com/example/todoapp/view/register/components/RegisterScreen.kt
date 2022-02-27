@@ -8,6 +8,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -103,6 +105,13 @@ fun RegisterScreen(
                     label = {
                         NormalText(text = stringResource(id = R.string.name))
                     },
+                    leadingIcon = {
+                        Icon(
+                            painterResource(id = R.drawable.ic_person_black_24dp),
+                            contentDescription = "",
+                            tint = DarkBlue
+                        )
+                    },
                     shape = RoundedCornerShape(20.dp),
                     value = viewModel.name,
                     onValueChange = { value ->
@@ -130,6 +139,13 @@ fun RegisterScreen(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     label = {
                         NormalText(text = stringResource(id = R.string.email))
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Email,
+                            contentDescription = "",
+                            tint = DarkBlue
+                        )
                     },
                     shape = RoundedCornerShape(20.dp),
                     value = viewModel.email,
@@ -159,6 +175,13 @@ fun RegisterScreen(
                     label = {
                         NormalText(text = stringResource(id = R.string.password))
                     },
+                    leadingIcon = {
+                        Icon(
+                            painterResource(id = R.drawable.ic_lock_black_24dp),
+                            contentDescription = "",
+                            tint = DarkBlue
+                        )
+                    },
                     shape = RoundedCornerShape(20.dp),
                     value = viewModel.password,
                     onValueChange = { value ->
@@ -179,7 +202,7 @@ fun RegisterScreen(
                                 else painterResource(
                                     id = R.drawable.ic_visibility_off_black_24dp
                                 ),
-                                contentDescription = ""
+                                contentDescription = "", tint = DarkBlue
                             )
                         }
                     },

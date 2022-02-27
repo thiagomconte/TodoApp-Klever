@@ -8,6 +8,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -104,6 +105,13 @@ fun LoginScreen(
                     label = {
                         NormalText(text = stringResource(id = R.string.email))
                     },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Email,
+                            contentDescription = "",
+                            tint = DarkBlue
+                        )
+                    },
                     shape = RoundedCornerShape(20.dp),
                     value = viewModel.email,
                     onValueChange = { value ->
@@ -130,6 +138,13 @@ fun LoginScreen(
                     label = {
                         NormalText(text = stringResource(id = R.string.password))
                     },
+                    leadingIcon = {
+                        Icon(
+                            painterResource(id = R.drawable.ic_lock_black_24dp),
+                            contentDescription = "",
+                            tint = DarkBlue
+                        )
+                    },
                     shape = RoundedCornerShape(20.dp),
                     value = viewModel.password,
                     onValueChange = { value ->
@@ -150,7 +165,8 @@ fun LoginScreen(
                                 else painterResource(
                                     id = R.drawable.ic_visibility_off_black_24dp
                                 ),
-                                contentDescription = ""
+                                contentDescription = "",
+                                tint = DarkBlue
                             )
                         }
                     },
