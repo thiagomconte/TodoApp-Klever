@@ -1,6 +1,8 @@
 package com.example.todoapp.view.register
 
-import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.app.boundary.UserRepository
@@ -18,6 +20,10 @@ import javax.inject.Inject
 class RegisterViewModel @Inject constructor(
     private val repo: UserRepository
 ) : ViewModel() {
+
+    var name by mutableStateOf("")
+    var email by mutableStateOf("")
+    var password by mutableStateOf("")
 
     private val _channel = Channel<UiEvent>()
     val channel = _channel.receiveAsFlow()
@@ -52,30 +58,24 @@ class RegisterViewModel @Inject constructor(
     }
 
     fun validateName(
-        textFieldValue: TextFieldValue,
         onNameError: (Boolean) -> Unit
     ) {
-        onNameError(!isNameValid(textFieldValue.text))
+        onNameError(!isNameValid(name))
     }
 
     fun validateEmail(
-        textFieldValue: TextFieldValue,
         onEmailError: (Boolean) -> Unit
     ) {
-        onEmailError(!Common.isEmailValid(textFieldValue.text))
+        onEmailError(!Common.isEmailValid(email))
     }
 
     fun validatePassword(
-        textFieldValue: TextFieldValue,
         onPasswordError: (Boolean) -> Unit
     ) {
-        onPasswordError(textFieldValue.text.length !in 9..19)
+        onPasswordError(!isPasswordValid(password))
     }
 
     fun validate(
-        email: String,
-        password: String,
-        name: String,
         onNameError: (Boolean) -> Unit,
         onEmailError: (Boolean) -> Unit,
         onPasswordError: (Boolean) -> Unit,
@@ -89,7 +89,7 @@ class RegisterViewModel @Inject constructor(
         }
     }
 
-    private fun isNameValid(name: String) = name.length in 4..29
+    private fun isNameValid(name: String) = name.length in 3..30
 
-    private fun isPasswordValid(password: String) = password.length in 9..19
+    private fun isPasswordValid(password: String) = password.length in 8..20
 }

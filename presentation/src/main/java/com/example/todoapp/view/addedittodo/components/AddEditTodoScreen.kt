@@ -10,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -93,10 +92,10 @@ fun AddEditTodoScreen(
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = viewModel.title, onValueChange = { value ->
+                    viewModel.title = value
                     viewModel.validateTitle(onTitleError = {
                         titleError = it
                     })
-                    viewModel.title = value
                 },
                 label = {
                     NormalText(text = stringResource(R.string.title))
@@ -120,12 +119,12 @@ fun AddEditTodoScreen(
                     .fillMaxWidth()
                     .height(100.dp),
                 value = viewModel.description, onValueChange = { value ->
-                    viewModel.validateDescription(onDescriptionError = {
-                        descriptionError = it
-                    })
                     if (value.length < 200) {
                         viewModel.description = value
                     }
+                    viewModel.validateDescription(onDescriptionError = {
+                        descriptionError = it
+                    })
                 },
                 label = {
                     NormalText(text = stringResource(R.string.description))

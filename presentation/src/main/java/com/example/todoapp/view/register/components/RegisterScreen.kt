@@ -18,7 +18,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -40,9 +39,7 @@ fun RegisterScreen(
     onPopBackStack: (UiEvent.PopBackStack) -> Unit,
     viewModel: RegisterViewModel = hiltViewModel()
 ) {
-    var name by remember { mutableStateOf(TextFieldValue("")) }
-    var email by remember { mutableStateOf(TextFieldValue("")) }
-    var password by remember { mutableStateOf(TextFieldValue("")) }
+
     var loading by remember { mutableStateOf(false) }
     var passwordVisibility by remember { mutableStateOf(false) }
     var nameError by remember { mutableStateOf(false) }
@@ -107,12 +104,12 @@ fun RegisterScreen(
                         NormalText(text = stringResource(id = R.string.name))
                     },
                     shape = RoundedCornerShape(20.dp),
-                    value = name,
+                    value = viewModel.name,
                     onValueChange = { value ->
-                        viewModel.validateName(value, onNameError = {
+                        viewModel.name = value
+                        viewModel.validateName(onNameError = {
                             nameError = it
                         })
-                        name = value
                     },
                     colors = TextFieldDefaults.textFieldColors(
                         backgroundColor = Color.Transparent,
@@ -135,12 +132,12 @@ fun RegisterScreen(
                         NormalText(text = stringResource(id = R.string.email))
                     },
                     shape = RoundedCornerShape(20.dp),
-                    value = email,
+                    value = viewModel.email,
                     onValueChange = { value ->
-                        viewModel.validateEmail(value, onEmailError = {
+                        viewModel.email = value
+                        viewModel.validateEmail(onEmailError = {
                             emailError = it
                         })
-                        email = value
                     },
                     colors = TextFieldDefaults.textFieldColors(
                         backgroundColor = Color.Transparent,
@@ -163,12 +160,12 @@ fun RegisterScreen(
                         NormalText(text = stringResource(id = R.string.password))
                     },
                     shape = RoundedCornerShape(20.dp),
-                    value = password,
+                    value = viewModel.password,
                     onValueChange = { value ->
-                        viewModel.validatePassword(value, onPasswordError = {
+                        viewModel.password = value
+                        viewModel.validatePassword(onPasswordError = {
                             passwordError = it
                         })
-                        password = value
                     },
                     visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
                     trailingIcon = {
@@ -203,9 +200,6 @@ fun RegisterScreen(
                 Button(
                     onClick = {
                         viewModel.validate(
-                            email.text,
-                            password.text,
-                            name.text,
                             onNameError = {
                                 nameError = it
                             },
@@ -218,9 +212,9 @@ fun RegisterScreen(
                             onValidate = {
                                 viewModel.onEvent(
                                     RegisterEvent.RegisterUser(
-                                        name.text,
-                                        email.text,
-                                        password.text
+                                        viewModel.name,
+                                        viewModel.email,
+                                        viewModel.password
                                     )
                                 )
                                 loading = true

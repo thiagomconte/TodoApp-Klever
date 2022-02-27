@@ -19,7 +19,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -42,8 +41,7 @@ fun LoginScreen(
     onNavigate: (UiEvent.Navigate) -> Unit,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
-    var email by remember { mutableStateOf(TextFieldValue("")) }
-    var password by remember { mutableStateOf(TextFieldValue("")) }
+
     var passwordVisibility by remember { mutableStateOf(false) }
     var emailError by remember { mutableStateOf(false) }
     var passwordError by remember { mutableStateOf(false) }
@@ -107,10 +105,10 @@ fun LoginScreen(
                         NormalText(text = stringResource(id = R.string.email))
                     },
                     shape = RoundedCornerShape(20.dp),
-                    value = email,
+                    value = viewModel.email,
                     onValueChange = { value ->
-                        viewModel.validateEmail(value, onEmailError = { emailError = it })
-                        email = value
+                        viewModel.email = value
+                        viewModel.validateEmail(onEmailError = { emailError = it })
                     },
                     colors = TextFieldDefaults.textFieldColors(
                         backgroundColor = Color.Transparent,
@@ -133,12 +131,12 @@ fun LoginScreen(
                         NormalText(text = stringResource(id = R.string.password))
                     },
                     shape = RoundedCornerShape(20.dp),
-                    value = password,
+                    value = viewModel.password,
                     onValueChange = { value ->
-                        viewModel.validatePassword(value, onPasswordError = {
+                        viewModel.password = value
+                        viewModel.validatePassword(onPasswordError = {
                             passwordError = it
                         })
-                        password = value
                     },
                     visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
                     trailingIcon = {
@@ -172,15 +170,15 @@ fun LoginScreen(
                 }
                 Button(
                     onClick = {
-                        viewModel.validate(email.text, password.text, onEmailError = {
+                        viewModel.validate(onEmailError = {
                             emailError = it
                         }, onPasswordError = {
                             passwordError = it
                         }, onValidate = {
                             viewModel.onEvent(
                                 LoginEvent.LoginUser(
-                                    email.text,
-                                    password.text
+                                    viewModel.email,
+                                    viewModel.password
                                 ),
                                 context
                             )

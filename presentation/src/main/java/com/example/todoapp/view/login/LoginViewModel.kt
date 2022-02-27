@@ -1,7 +1,9 @@
 package com.example.todoapp.view.login
 
 import android.content.Context
-import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.app.remote.TokenInterceptor
@@ -28,6 +30,9 @@ class LoginViewModel @Inject constructor(
 
     @Inject
     lateinit var tokenInterceptor: TokenInterceptor
+
+    var email by mutableStateOf("")
+    var password by mutableStateOf("")
 
     private val _channel = Channel<UiEvent>()
     val channel = _channel.receiveAsFlow()
@@ -70,17 +75,15 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun validatePassword(textFieldValue: TextFieldValue, onPasswordError: (Boolean) -> Unit) {
-        onPasswordError(textFieldValue.text.isBlank())
+    fun validatePassword(onPasswordError: (Boolean) -> Unit) {
+        onPasswordError(password.isBlank())
     }
 
-    fun validateEmail(textFieldValue: TextFieldValue, onEmailError: (Boolean) -> Unit) {
-        onEmailError(!Common.isEmailValid(textFieldValue.text))
+    fun validateEmail(onEmailError: (Boolean) -> Unit) {
+        onEmailError(!Common.isEmailValid(email))
     }
 
     fun validate(
-        email: String,
-        password: String,
         onEmailError: (Boolean) -> Unit,
         onPasswordError: (Boolean) -> Unit,
         onValidate: () -> Unit
