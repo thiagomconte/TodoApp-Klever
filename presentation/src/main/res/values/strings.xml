@@ -26,6 +26,13 @@
 
     <!-- AddEditTodo Screen -->
     <string name="description_validator">Description must be between 20 and 200 characters long!</string>
-    <string name="title_validator">Title must be al least 5 characters long!</string>
+    <string name="title_validator">Title must be at least 5 characters long!</string>
+    <string name="update_task">Update Task</string>
+    <string name="add_task">Add Task</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+    <string name="mark_as_done">Mark as done</string>
+    <string name="update">Update</string>
+    <string name="create">Create</string>
 
 </resources>

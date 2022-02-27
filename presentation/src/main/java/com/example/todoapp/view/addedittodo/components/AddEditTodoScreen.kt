@@ -89,7 +89,9 @@ fun AddEditTodoScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                text = if (state is ViewState.Success) "Update Task" else "Add Task",
+                text = if (state is ViewState.Success) stringResource(R.string.update_task) else stringResource(
+                    R.string.add_task
+                ),
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 fontFamily = RobotoBold,
@@ -104,7 +106,7 @@ fun AddEditTodoScreen(
                     title.value = value
                 },
                 label = {
-                    NormalText(text = "Title")
+                    NormalText(text = stringResource(R.string.title))
                 },
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = Color.Transparent,
@@ -133,7 +135,7 @@ fun AddEditTodoScreen(
                     }
                 },
                 label = {
-                    NormalText(text = "Description")
+                    NormalText(text = stringResource(R.string.description))
                 },
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = Color.Transparent,
@@ -156,7 +158,7 @@ fun AddEditTodoScreen(
                         onCheckedChange = { isChecked.value = !isChecked.value },
                         modifier = Modifier.padding(end = 8.dp)
                     )
-                    NormalText(text = "Mark as done")
+                    NormalText(text = stringResource(R.string.mark_as_done))
                 }
             }
             Button(
@@ -208,7 +210,9 @@ fun AddEditTodoScreen(
                 )
             ) {
                 Text(
-                    text = if (state is ViewState.Success) "Update" else "Create",
+                    text = if (state is ViewState.Success) stringResource(R.string.update) else stringResource(
+                        R.string.create
+                    ),
                     modifier = Modifier.padding(vertical = 4.dp),
                     style = MaterialTheme.typography.h6
                 )
