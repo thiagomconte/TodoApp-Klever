@@ -1,6 +1,9 @@
 package com.example.todoapp.view.addedittodo
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -22,6 +25,10 @@ class AddEditTodoViewModel @Inject constructor(
     private val repo: TodoRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+
+    var title by mutableStateOf("")
+    var description by mutableStateOf("")
+    var isChecked by mutableStateOf(false)
 
     private val _channel = Channel<UiEvent>()
     val channel = _channel.receiveAsFlow()
@@ -48,7 +55,12 @@ class AddEditTodoViewModel @Inject constructor(
                 _getTodoState.value = ViewState.Loading
             }.collectLatest { resource ->
                 when (resource) {
-                    is Resource.Success -> _getTodoState.value = ViewState.Success(resource.data)
+                    is Resource.Success -> {
+                        title = resource.data.title
+                        description = resource.data.description
+                        isChecked = resource.data.completed
+                        _getTodoState.value = ViewState.Success(resource.data)
+                    }
                     is Resource.Error -> sendEvent(UiEvent.ShowAlertDialog(resource.error))
                     else -> Unit
                 }
@@ -60,7 +72,7 @@ class AddEditTodoViewModel @Inject constructor(
         when (event) {
             is AddEditTodoEvent.AddTodoClick -> {
                 viewModelScope.launch {
-                    repo.createTodo(event.title, event.description).onStart {
+                    repo.createTodo(title, description).onStart {
                         _createUpdateState.value = ViewState.Loading
                     }.collectLatest { resource ->
                         when (resource) {
@@ -101,17 +113,15 @@ class AddEditTodoViewModel @Inject constructor(
         }
     }
 
-    fun validateDescription(description: String, onDescriptionError: (Boolean) -> Unit) {
+    fun validateDescription(onDescriptionError: (Boolean) -> Unit) {
         onDescriptionError(!isDescriptionValid(description))
     }
 
-    fun validateTitle(title: String, onTitleError: (Boolean) -> Unit) {
+    fun validateTitle(onTitleError: (Boolean) -> Unit) {
         onTitleError(!isTitleValid(title))
     }
 
     fun validate(
-        title: String,
-        description: String,
         onTitleError: (Boolean) -> Unit,
         onDescriptionError: (Boolean) -> Unit,
         onValidate: () -> Unit

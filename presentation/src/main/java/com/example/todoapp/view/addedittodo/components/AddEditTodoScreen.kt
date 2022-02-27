@@ -12,7 +12,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -34,13 +33,13 @@ fun AddEditTodoScreen(
     viewModel: AddEditTodoViewModel = hiltViewModel()
 ) {
 
-    val errorMsg = remember { mutableStateOf("") }
-    val showErrorMsg = remember { mutableStateOf(false) }
-    val title = remember { mutableStateOf(TextFieldValue("")) }
-    val titleError = remember { mutableStateOf(false) }
-    val description = remember { mutableStateOf(TextFieldValue("")) }
-    val descriptionError = remember { mutableStateOf(false) }
-    val isChecked = remember { mutableStateOf(false) }
+    var errorMsg by remember { mutableStateOf("") }
+    var showErrorMsg by remember { mutableStateOf(false) }
+    var title by remember { mutableStateOf(TextFieldValue("")) }
+    var titleError by remember { mutableStateOf(false) }
+    var description by remember { mutableStateOf(TextFieldValue("")) }
+    var descriptionError by remember { mutableStateOf(false) }
+    var isChecked by remember { mutableStateOf(false) }
     val state = viewModel.getTodoState.collectAsState(ViewState.Initial).value
     val createUpdateState = viewModel.createUpdateState.collectAsState(ViewState.Initial).value
 
@@ -48,8 +47,8 @@ fun AddEditTodoScreen(
         viewModel.channel.collect { event ->
             when (event) {
                 is UiEvent.ShowAlertDialog -> {
-                    errorMsg.value = event.msg
-                    showErrorMsg.value = true
+                    errorMsg = event.msg
+                    showErrorMsg = true
                 }
                 is UiEvent.PopBackStack -> onPopBackStack()
                 else -> Unit
@@ -60,9 +59,9 @@ fun AddEditTodoScreen(
     when (state) {
         is ViewState.Loading -> LoadingComponent()
         is ViewState.Success -> {
-            title.value = TextFieldValue(state.data.title)
-            description.value = TextFieldValue(state.data.description)
-            isChecked.value = state.data.completed
+            title = TextFieldValue(state.data.title)
+            description = TextFieldValue(state.data.description)
+            isChecked = state.data.completed
         }
         else -> Unit
     }
@@ -73,9 +72,9 @@ fun AddEditTodoScreen(
         else -> Unit
     }
 
-    if (showErrorMsg.value) {
-        AlertDialogComponent(text = errorMsg.value) {
-            showErrorMsg.value = false
+    if (showErrorMsg) {
+        AlertDialogComponent(text = errorMsg) {
+            showErrorMsg = false
             onPopBackStack()
         }
     }
@@ -101,11 +100,11 @@ fun AddEditTodoScreen(
             )
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = title.value, onValueChange = { value ->
-                    viewModel.validateTitle(value.text, onTitleError = {
-                        titleError.value = it
+                value = viewModel.title, onValueChange = { value ->
+                    viewModel.validateTitle(onTitleError = {
+                        titleError = it
                     })
-                    title.value = value
+                    viewModel.title = value
                 },
                 label = {
                     NormalText(text = stringResource(R.string.title))
@@ -115,25 +114,25 @@ fun AddEditTodoScreen(
                     unfocusedLabelColor = DarkBlue,
                     focusedLabelColor = DarkBlue,
                     cursorColor = DarkBlue,
-                    focusedIndicatorColor = if (titleError.value) Color.Red else DarkBlue,
-                    unfocusedIndicatorColor = if (titleError.value) Color.Red else DarkBlue,
+                    focusedIndicatorColor = if (titleError) Color.Red else DarkBlue,
+                    unfocusedIndicatorColor = if (titleError) Color.Red else DarkBlue,
                     textColor = DarkBlue,
                 ),
                 textStyle = TextStyle(fontFamily = RobotoRegular)
             )
-            if (titleError.value) {
+            if (titleError) {
                 ErrorText(text = stringResource(R.string.title_validator))
             }
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(100.dp),
-                value = description.value, onValueChange = { value ->
-                    viewModel.validateDescription(value.text, onDescriptionError = {
-                        descriptionError.value = it
+                value = viewModel.description, onValueChange = { value ->
+                    viewModel.validateDescription(onDescriptionError = {
+                        descriptionError = it
                     })
-                    if (value.text.length < 200) {
-                        description.value = value
+                    if (value.length < 200) {
+                        viewModel.description = value
                     }
                 },
                 label = {
@@ -144,20 +143,20 @@ fun AddEditTodoScreen(
                     unfocusedLabelColor = DarkBlue,
                     focusedLabelColor = DarkBlue,
                     cursorColor = DarkBlue,
-                    focusedIndicatorColor = if (descriptionError.value) Color.Red else DarkBlue,
-                    unfocusedIndicatorColor = if (descriptionError.value) Color.Red else DarkBlue,
+                    focusedIndicatorColor = if (descriptionError) Color.Red else DarkBlue,
+                    unfocusedIndicatorColor = if (descriptionError) Color.Red else DarkBlue,
                     textColor = DarkBlue,
                 ),
                 textStyle = TextStyle(fontFamily = RobotoRegular)
             )
-            if (descriptionError.value) {
+            if (descriptionError) {
                 ErrorText(text = stringResource(R.string.description_validator))
             }
             if (state is ViewState.Success) {
                 Row() {
                     Checkbox(
-                        checked = isChecked.value,
-                        onCheckedChange = { isChecked.value = !isChecked.value },
+                        checked = viewModel.isChecked,
+                        onCheckedChange = { viewModel.isChecked = !viewModel.isChecked },
                         modifier = Modifier.align(Alignment.CenterVertically)
                     )
                     Text(
@@ -169,43 +168,31 @@ fun AddEditTodoScreen(
             }
             Button(
                 onClick = {
-                    if (state is ViewState.Success) {
-                        viewModel.validate(
-                            title.value.text, description.value.text, onTitleError = {
-                                titleError.value = it
-                            },
-                            onDescriptionError = {
-                                descriptionError.value = it
-                            }, onValidate = {
-                            viewModel.onEvent(
+                    viewModel.validate(
+                        onTitleError = {
+                            titleError = it
+                        },
+                        onDescriptionError = {
+                            descriptionError = it
+                        },
+                        onValidate = {
+                            if (state is ViewState.Success) viewModel.onEvent(
                                 AddEditTodoEvent.UpdateTodoClick(
                                     Todo(
-                                        state.data.id,
-                                        title.value.text,
-                                        description.value.text,
-                                        isChecked.value
+                                        viewModel.id,
+                                        viewModel.title,
+                                        viewModel.description,
+                                        viewModel.isChecked
                                     )
                                 )
-                            )
-                        }
-                        )
-                    } else {
-                        viewModel.validate(
-                            title.value.text, description.value.text, onTitleError = {
-                                titleError.value = it
-                            },
-                            onDescriptionError = {
-                                descriptionError.value = it
-                            }, onValidate = {
-                            viewModel.onEvent(
+                            ) else viewModel.onEvent(
                                 AddEditTodoEvent.AddTodoClick(
-                                    title.value.text,
-                                    description.value.text,
+                                    viewModel.title,
+                                    viewModel.description
                                 )
                             )
                         }
-                        )
-                    }
+                    )
                 },
                 modifier = Modifier
                     .fillMaxWidth()

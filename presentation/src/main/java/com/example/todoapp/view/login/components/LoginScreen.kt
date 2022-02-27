@@ -42,13 +42,13 @@ fun LoginScreen(
     onNavigate: (UiEvent.Navigate) -> Unit,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
-    val email = remember { mutableStateOf(TextFieldValue("")) }
-    val password = remember { mutableStateOf(TextFieldValue("")) }
-    val passwordVisibility = remember { mutableStateOf(false) }
-    val emailError = remember { mutableStateOf(false) }
-    val passwordError = remember { mutableStateOf(false) }
-    val showMsgError = remember { mutableStateOf(false) }
-    val msgError = remember { mutableStateOf("") }
+    var email by remember { mutableStateOf(TextFieldValue("")) }
+    var password by remember { mutableStateOf(TextFieldValue("")) }
+    var passwordVisibility by remember { mutableStateOf(false) }
+    var emailError by remember { mutableStateOf(false) }
+    var passwordError by remember { mutableStateOf(false) }
+    var showMsgError by remember { mutableStateOf(false) }
+    var msgError by remember { mutableStateOf("") }
     val context = LocalContext.current
     val loginState = viewModel.loginState.collectAsState(ViewState.Initial).value
 
@@ -57,17 +57,17 @@ fun LoginScreen(
             when (event) {
                 is UiEvent.Navigate -> onNavigate(UiEvent.Navigate(event.route))
                 is UiEvent.ShowAlertDialog -> {
-                    showMsgError.value = true
-                    msgError.value = event.msg
+                    showMsgError = true
+                    msgError = event.msg
                 }
                 else -> Unit
             }
         }
     }
 
-    if (showMsgError.value) {
-        AlertDialogComponent(msgError.value) {
-            showMsgError.value = false
+    if (showMsgError) {
+        AlertDialogComponent(msgError) {
+            showMsgError = false
         }
     }
 
@@ -107,23 +107,23 @@ fun LoginScreen(
                         NormalText(text = stringResource(id = R.string.email))
                     },
                     shape = RoundedCornerShape(20.dp),
-                    value = email.value,
+                    value = email,
                     onValueChange = { value ->
-                        viewModel.validateEmail(value, onEmailError = { emailError.value = it })
-                        email.value = value
+                        viewModel.validateEmail(value, onEmailError = { emailError = it })
+                        email = value
                     },
                     colors = TextFieldDefaults.textFieldColors(
                         backgroundColor = Color.Transparent,
                         unfocusedLabelColor = DarkBlue,
                         focusedLabelColor = DarkBlue,
                         cursorColor = DarkBlue,
-                        focusedIndicatorColor = if (emailError.value) Color.Red else DarkBlue,
-                        unfocusedIndicatorColor = if (emailError.value) Color.Red else DarkBlue,
+                        focusedIndicatorColor = if (emailError) Color.Red else DarkBlue,
+                        unfocusedIndicatorColor = if (emailError) Color.Red else DarkBlue,
                         textColor = DarkBlue,
                     ),
                     textStyle = TextStyle(fontFamily = RobotoRegular)
                 )
-                if (emailError.value) {
+                if (emailError) {
                     ErrorText(text = stringResource(id = R.string.invalid_email))
                 }
                 OutlinedTextField(
@@ -133,21 +133,21 @@ fun LoginScreen(
                         NormalText(text = stringResource(id = R.string.password))
                     },
                     shape = RoundedCornerShape(20.dp),
-                    value = password.value,
+                    value = password,
                     onValueChange = { value ->
                         viewModel.validatePassword(value, onPasswordError = {
-                            passwordError.value = it
+                            passwordError = it
                         })
-                        password.value = value
+                        password = value
                     },
-                    visualTransformation = if (passwordVisibility.value) VisualTransformation.None else PasswordVisualTransformation(),
+                    visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
                     trailingIcon = {
                         IconButton(onClick = {
-                            passwordVisibility.value = !passwordVisibility.value
+                            passwordVisibility = !passwordVisibility
                         }) {
                             Icon(
                                 painter =
-                                if (passwordVisibility.value)
+                                if (passwordVisibility)
                                     painterResource(id = R.drawable.ic_visibility_black_24dp)
                                 else painterResource(
                                     id = R.drawable.ic_visibility_off_black_24dp
@@ -161,26 +161,26 @@ fun LoginScreen(
                         unfocusedLabelColor = DarkBlue,
                         focusedLabelColor = DarkBlue,
                         cursorColor = DarkBlue,
-                        focusedIndicatorColor = if (passwordError.value) Color.Red else DarkBlue,
-                        unfocusedIndicatorColor = if (passwordError.value) Color.Red else DarkBlue,
+                        focusedIndicatorColor = if (passwordError) Color.Red else DarkBlue,
+                        unfocusedIndicatorColor = if (passwordError) Color.Red else DarkBlue,
                         textColor = DarkBlue,
                     ),
                     textStyle = TextStyle(fontFamily = RobotoRegular)
                 )
-                if (passwordError.value) {
+                if (passwordError) {
                     ErrorText(text = stringResource(id = R.string.password_required))
                 }
                 Button(
                     onClick = {
-                        viewModel.validate(email.value.text, password.value.text, onEmailError = {
-                            emailError.value = it
+                        viewModel.validate(email.text, password.text, onEmailError = {
+                            emailError = it
                         }, onPasswordError = {
-                            passwordError.value = it
+                            passwordError = it
                         }, onValidate = {
                             viewModel.onEvent(
                                 LoginEvent.LoginUser(
-                                    email.value.text,
-                                    password.value.text
+                                    email.text,
+                                    password.text
                                 ),
                                 context
                             )

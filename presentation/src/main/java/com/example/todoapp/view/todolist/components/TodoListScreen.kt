@@ -41,10 +41,10 @@ fun TodoListScreen(
     viewModel: TodoListViewModel = hiltViewModel()
 ) {
 
-    val errorMsg = remember { mutableStateOf("") }
-    val showErrorMsg = remember { mutableStateOf(false) }
-    val showConfirmDialog = remember { mutableStateOf(false) }
-    val id = remember { mutableStateOf("") }
+    var errorMsg by remember { mutableStateOf("") }
+    var showErrorMsg by remember { mutableStateOf(false) }
+    var showConfirmDialog by remember { mutableStateOf(false) }
+    var id by remember { mutableStateOf("") }
 
     val getTodosState = viewModel.getTodosState.collectAsState(ViewState.Initial).value
     val deleteTodoState = viewModel.deleteTodoState.collectAsState(ViewState.Initial).value
@@ -56,8 +56,8 @@ fun TodoListScreen(
             when (event) {
                 is UiEvent.Navigate -> onNavigate(UiEvent.Navigate(event.route))
                 is UiEvent.ShowAlertDialog -> {
-                    errorMsg.value = event.msg
-                    showErrorMsg.value = true
+                    errorMsg = event.msg
+                    showErrorMsg = true
                 }
                 else -> Unit
             }
@@ -66,17 +66,17 @@ fun TodoListScreen(
 
     if (deleteTodoState is ViewState.Loading) LoadingComponent()
 
-    if (showErrorMsg.value) {
-        AlertDialogComponent(errorMsg.value, onDismiss = { showErrorMsg.value = false })
+    if (showErrorMsg) {
+        AlertDialogComponent(errorMsg, onDismiss = { showErrorMsg = false })
     }
 
-    if (showConfirmDialog.value) OpenDialog(
-        onDismiss = { showConfirmDialog.value = false },
+    if (showConfirmDialog) OpenDialog(
+        onDismiss = { showConfirmDialog = false },
         onConfirm = {
             viewModel.onEvent(it)
-            showConfirmDialog.value = false
+            showConfirmDialog = false
         },
-        id = id.value
+        id = id
     )
 
     Scaffold(
@@ -139,8 +139,8 @@ fun TodoListScreen(
                             items(getTodosState.data) { todo ->
                                 TodoListItem(
                                     onDeleteTodoClick = {
-                                        showConfirmDialog.value = true
-                                        id.value = it.id
+                                        showConfirmDialog = true
+                                        id = it.id
                                     },
                                     onEditTodoClick = { viewModel.onEvent(it) },
                                     todo
