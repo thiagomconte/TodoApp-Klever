@@ -3,12 +3,12 @@ package com.example.data.app.repository
 import com.example.data.app.remote.ApiService
 import com.example.data.app.remote.entity.todo.ApiTodo
 import com.example.data.app.remote.entity.todo.toTodo
+import com.example.data.app.util.ErrorHandler
 import com.example.domain.app.boundary.TodoRepository
 import com.example.domain.app.entity.Todo
 import com.example.domain.app.util.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import org.json.JSONObject
 import java.io.IOException
 import javax.inject.Inject
 
@@ -28,12 +28,7 @@ class TodoRepositoryImpl @Inject constructor(
                         )
                     )
                 } else {
-                    try {
-                        val jsonError = JSONObject(response.errorBody()!!.string())
-                        emit(Resource.Error(jsonError.getString("msg")))
-                    } catch (e: Exception) {
-                        emit(Resource.Error("Could not complete operation."))
-                    }
+                    emit(Resource.Error(ErrorHandler.handle(response.errorBody())))
                 }
             } catch (e: Exception) {
                 if (e is IOException) emit(Resource.Error("Could not reach server."))
@@ -53,12 +48,7 @@ class TodoRepositoryImpl @Inject constructor(
                         )
                     )
                 } else {
-                    try {
-                        val jsonError = JSONObject(response.errorBody()!!.string())
-                        emit(Resource.Error(jsonError.getString("msg")))
-                    } catch (e: Exception) {
-                        emit(Resource.Error("Could not complete operation."))
-                    }
+                    emit(Resource.Error(ErrorHandler.handle(response.errorBody())))
                 }
             } catch (e: Exception) {
                 if (e is IOException) emit(Resource.Error("Could not reach server."))
@@ -76,12 +66,7 @@ class TodoRepositoryImpl @Inject constructor(
                         Resource.Success(response.body()!!.toTodo())
                     )
                 } else {
-                    try {
-                        val jsonError = JSONObject(response.errorBody()!!.string())
-                        emit(Resource.Error(jsonError.getString("msg")))
-                    } catch (e: Exception) {
-                        emit(Resource.Error("Could not complete operation."))
-                    }
+                    emit(Resource.Error(ErrorHandler.handle(response.errorBody())))
                 }
             } catch (e: Exception) {
                 if (e is IOException) emit(Resource.Error("Could not reach server."))
@@ -100,12 +85,7 @@ class TodoRepositoryImpl @Inject constructor(
                             Resource.Success(response.body()?.msg ?: "Task successfully updated.")
                         )
                     } else {
-                        try {
-                            val jsonError = JSONObject(response.errorBody()!!.string())
-                            emit(Resource.Error(jsonError.getString("msg")))
-                        } catch (e: Exception) {
-                            emit(Resource.Error("Could not complete operation."))
-                        }
+                        emit(Resource.Error(ErrorHandler.handle(response.errorBody())))
                     }
                 }
             } catch (e: Exception) {
@@ -124,12 +104,7 @@ class TodoRepositoryImpl @Inject constructor(
                         Resource.Success(response.body()?.msg ?: "Task successfully deleted.")
                     )
                 } else {
-                    try {
-                        val jsonError = JSONObject(response.errorBody()!!.string())
-                        emit(Resource.Error(jsonError.getString("msg")))
-                    } catch (e: Exception) {
-                        emit(Resource.Error("Could not complete operation."))
-                    }
+                    emit(Resource.Error(ErrorHandler.handle(response.errorBody())))
                 }
             } catch (e: Exception) {
                 if (e is IOException) emit(Resource.Error("Could not reach server."))

@@ -2,12 +2,12 @@ package com.example.data.app.repository
 
 import com.example.data.app.remote.ApiService
 import com.example.data.app.remote.entity.user.request.RegisterUserRequest
+import com.example.data.app.util.ErrorHandler
 import com.example.domain.app.boundary.UserRepository
 import com.example.domain.app.entity.User
 import com.example.domain.app.util.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import org.json.JSONObject
 import java.io.IOException
 import javax.inject.Inject
 
@@ -30,12 +30,7 @@ class UserRepositoryImpl @Inject constructor(
                         )
                     )
                 } else {
-                    try {
-                        val jsonError = JSONObject(response.errorBody()!!.string())
-                        emit(Resource.Error(jsonError.getString("msg")))
-                    } catch (e: Exception) {
-                        emit(Resource.Error("Could not complete operation."))
-                    }
+                    emit(Resource.Error(ErrorHandler.handle(response.errorBody())))
                 }
             } catch (e: Exception) {
                 if (e is IOException) emit(Resource.Error("Could not reach server."))
@@ -49,7 +44,7 @@ class UserRepositoryImpl @Inject constructor(
         password: String
     ): Flow<Resource<User>> {
         return flow {
-            try {
+
                 val response = apiService.login(email, password)
                 if (response.isSuccessful) {
                     emit(
@@ -62,17 +57,9 @@ class UserRepositoryImpl @Inject constructor(
                         )
                     )
                 } else {
-                    try {
-                        val jsonError = JSONObject(response.errorBody()!!.string())
-                        emit(Resource.Error(jsonError.getString("msg")))
-                    } catch (e: Exception) {
-                        emit(Resource.Error("Could not complete operation."))
-                    }
+                    emit(Resource.Error(ErrorHandler.handle(response.errorBody())))
                 }
-            } catch (e: Exception) {
-                if (e is IOException) emit(Resource.Error("Could not reach server."))
-                else emit(Resource.Error("Could not complete operation."))
-            }
+
         }
     }
 }
