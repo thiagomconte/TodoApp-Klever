@@ -4,12 +4,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -94,6 +97,7 @@ fun TodoListScreen(
             state = rememberSwipeRefreshState(isRefreshing),
             onRefresh = { viewModel.refresh() },
         ) {
+
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -104,13 +108,17 @@ fun TodoListScreen(
                     is ViewState.Empty -> {
                         Column(
                             modifier = Modifier
+                                .fillMaxSize()
                                 .align(Alignment.Center)
-
+                                .verticalScroll(
+                                    rememberScrollState()
+                                ),
+                            verticalArrangement = Arrangement.Center
                         ) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_add_task_black_24dp),
                                 contentDescription = "Empty list",
-                                modifier = Modifier.align(Alignment.CenterHorizontally),
+                                modifier = Modifier.align(CenterHorizontally),
                                 tint = DarkBlue,
                             )
                             Text(
@@ -118,13 +126,15 @@ fun TodoListScreen(
                                 textAlign = TextAlign.Center,
                                 color = DarkBlue,
                                 fontFamily = RobotoRegular,
-                                modifier = Modifier.padding(top = 12.dp)
+                                modifier = Modifier
+                                    .padding(top = 12.dp)
+                                    .align(CenterHorizontally)
                             )
                         }
                     }
                     is ViewState.Loading -> LoadingComponent()
                     is ViewState.Success -> {
-                        LazyColumn() {
+                        LazyColumn(modifier = Modifier.fillMaxSize()) {
                             item {
                                 Text(
                                     stringResource(R.string.task_list),
@@ -149,11 +159,17 @@ fun TodoListScreen(
                         }
                     }
                     is ViewState.Error -> {
-                        Column(modifier = Modifier.align(Alignment.Center)) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .align(Alignment.Center)
+                                .verticalScroll(rememberScrollState()),
+                            verticalArrangement = Arrangement.Center
+                        ) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_error_outline_black_24dp),
                                 contentDescription = "Error",
-                                modifier = Modifier.align(Alignment.CenterHorizontally),
+                                modifier = Modifier.align(CenterHorizontally),
                                 tint = DarkBlue
                             )
                             Text(
@@ -161,7 +177,9 @@ fun TodoListScreen(
                                 textAlign = TextAlign.Center,
                                 color = DarkBlue,
                                 fontFamily = RobotoRegular,
-                                modifier = Modifier.padding(top = 12.dp)
+                                modifier = Modifier
+                                    .align(CenterHorizontally)
+                                    .padding(top = 12.dp)
                             )
                         }
                     }
