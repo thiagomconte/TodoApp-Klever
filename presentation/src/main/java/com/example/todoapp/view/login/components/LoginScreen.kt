@@ -185,7 +185,7 @@ fun LoginScreen(
                 )
                 AnimatedVisibility(visible = passwordError, enter = scaleIn()) {
                     ErrorText(
-                        error = emailError,
+                        error = passwordError,
                         text = stringResource(id = R.string.password_required)
                     )
                 }
