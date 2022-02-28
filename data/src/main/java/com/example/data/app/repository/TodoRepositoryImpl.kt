@@ -8,8 +8,8 @@ import com.example.domain.app.entity.Todo
 import com.example.domain.app.util.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import org.json.JSONObject
 import java.io.IOException
-import java.lang.Exception
 import javax.inject.Inject
 
 class TodoRepositoryImpl @Inject constructor(
@@ -19,16 +19,25 @@ class TodoRepositoryImpl @Inject constructor(
         return flow {
             try {
                 val response = apiService.getTodos()
-                emit(
-                    Resource.Success(
-                        response.todos.map {
-                            it.toTodo(it)
-                        }
+                if (response.isSuccessful) {
+                    emit(
+                        Resource.Success(
+                            response.body()!!.todos.map {
+                                it.toTodo()
+                            }
+                        )
                     )
-                )
+                } else {
+                    try {
+                        val jsonError = JSONObject(response.errorBody()!!.string())
+                        emit(Resource.Error(jsonError.getString("msg")))
+                    } catch (e: Exception) {
+                        emit(Resource.Error("Could not complete operation."))
+                    }
+                }
             } catch (e: Exception) {
                 if (e is IOException) emit(Resource.Error("Could not reach server."))
-                else emit(Resource.Error("Could not get tasks."))
+                else emit(Resource.Error("Could not complete operation."))
             }
         }
     }
@@ -37,12 +46,23 @@ class TodoRepositoryImpl @Inject constructor(
         return flow {
             try {
                 val response = apiService.createTodo(title, description)
-                emit(
-                    Resource.Success(response.msg)
-                )
+                if (response.isSuccessful) {
+                    emit(
+                        Resource.Success(
+                            response.body()?.msg ?: "Task successfully created."
+                        )
+                    )
+                } else {
+                    try {
+                        val jsonError = JSONObject(response.errorBody()!!.string())
+                        emit(Resource.Error(jsonError.getString("msg")))
+                    } catch (e: Exception) {
+                        emit(Resource.Error("Could not complete operation."))
+                    }
+                }
             } catch (e: Exception) {
                 if (e is IOException) emit(Resource.Error("Could not reach server."))
-                else emit(Resource.Error("Could not create task."))
+                else emit(Resource.Error("Could not complete operation."))
             }
         }
     }
@@ -51,12 +71,21 @@ class TodoRepositoryImpl @Inject constructor(
         return flow {
             try {
                 val response = apiService.getTodoById(id)
-                emit(
-                    Resource.Success(response.toTodo(response))
-                )
+                if (response.isSuccessful) {
+                    emit(
+                        Resource.Success(response.body()!!.toTodo())
+                    )
+                } else {
+                    try {
+                        val jsonError = JSONObject(response.errorBody()!!.string())
+                        emit(Resource.Error(jsonError.getString("msg")))
+                    } catch (e: Exception) {
+                        emit(Resource.Error("Could not complete operation."))
+                    }
+                }
             } catch (e: Exception) {
                 if (e is IOException) emit(Resource.Error("Could not reach server."))
-                else emit(Resource.Error("Could not get task."))
+                else emit(Resource.Error("Could not complete operation."))
             }
         }
     }
@@ -66,13 +95,22 @@ class TodoRepositoryImpl @Inject constructor(
             try {
                 with(todo) {
                     val response = apiService.updateTodo(ApiTodo(id, title, description, completed))
-                    emit(
-                        Resource.Success(response.msg)
-                    )
+                    if (response.isSuccessful) {
+                        emit(
+                            Resource.Success(response.body()?.msg ?: "Task successfully updated.")
+                        )
+                    } else {
+                        try {
+                            val jsonError = JSONObject(response.errorBody()!!.string())
+                            emit(Resource.Error(jsonError.getString("msg")))
+                        } catch (e: Exception) {
+                            emit(Resource.Error("Could not complete operation."))
+                        }
+                    }
                 }
             } catch (e: Exception) {
                 if (e is IOException) emit(Resource.Error("Could not reach server."))
-                else emit(Resource.Error("Could not update task."))
+                else emit(Resource.Error("Could not complete operation."))
             }
         }
     }
@@ -81,12 +119,21 @@ class TodoRepositoryImpl @Inject constructor(
         return flow {
             try {
                 val response = apiService.deleteTodo(id)
-                emit(
-                    Resource.Success(response.msg)
-                )
+                if (response.isSuccessful) {
+                    emit(
+                        Resource.Success(response.body()?.msg ?: "Task successfully deleted.")
+                    )
+                } else {
+                    try {
+                        val jsonError = JSONObject(response.errorBody()!!.string())
+                        emit(Resource.Error(jsonError.getString("msg")))
+                    } catch (e: Exception) {
+                        emit(Resource.Error("Could not complete operation."))
+                    }
+                }
             } catch (e: Exception) {
                 if (e is IOException) emit(Resource.Error("Could not reach server."))
-                else emit(Resource.Error("Could not delete task."))
+                else emit(Resource.Error("Could not complete operation."))
             }
         }
     }

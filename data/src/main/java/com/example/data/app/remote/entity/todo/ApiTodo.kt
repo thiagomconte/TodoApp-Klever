@@ -14,6 +14,4 @@ data class ApiTodo(
     val completed: Boolean
 )
 
-fun ApiTodo.toTodo(apiTodo: ApiTodo): Todo {
-    return Todo(apiTodo.id, apiTodo.title, apiTodo.description, apiTodo.completed)
-}
+fun ApiTodo.toTodo() = Todo(id, title, description, completed)

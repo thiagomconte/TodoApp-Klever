@@ -5,36 +5,37 @@ import com.example.data.app.remote.entity.todo.ApiTodo
 import com.example.data.app.remote.entity.todo.response.GetTodosResponse
 import com.example.data.app.remote.entity.user.request.RegisterUserRequest
 import com.example.data.app.remote.entity.user.response.LoginResponse
+import retrofit2.Response
 import retrofit2.http.*
 
 interface ApiService {
 
     @POST("users/register")
-    suspend fun register(@Body user: RegisterUserRequest): SuccessResponse
+    suspend fun register(@Body user: RegisterUserRequest): Response<SuccessResponse>
 
     @FormUrlEncoded
     @POST("users/login")
     suspend fun login(
         @Field("email") email: String,
         @Field("password") password: String
-    ): LoginResponse
+    ): Response<LoginResponse>
 
     @FormUrlEncoded
     @POST("todos")
     suspend fun createTodo(
         @Field("title") title: String,
         @Field("description") description: String
-    ): SuccessResponse
+    ): Response<SuccessResponse>
 
     @GET("todos")
-    suspend fun getTodos(): GetTodosResponse
+    suspend fun getTodos(): Response<GetTodosResponse>
 
     @GET("todos/{id}")
-    suspend fun getTodoById(@Path("id") id: String): ApiTodo
+    suspend fun getTodoById(@Path("id") id: String): Response<ApiTodo>
 
     @PUT("todos")
-    suspend fun updateTodo(@Body todo: ApiTodo): SuccessResponse
+    suspend fun updateTodo(@Body todo: ApiTodo): Response<SuccessResponse>
 
     @DELETE("todos/{id}")
-    suspend fun deleteTodo(@Path("id") id: String): SuccessResponse
+    suspend fun deleteTodo(@Path("id") id: String): Response<SuccessResponse>
 }

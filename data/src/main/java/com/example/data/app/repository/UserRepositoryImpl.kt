@@ -7,6 +7,7 @@ import com.example.domain.app.entity.User
 import com.example.domain.app.util.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import org.json.JSONObject
 import java.io.IOException
 import javax.inject.Inject
 
@@ -22,7 +23,20 @@ class UserRepositoryImpl @Inject constructor(
         return flow {
             try {
                 val response = apiService.register(RegisterUserRequest(name, email, password))
-                emit(Resource.Success(response.msg))
+                if (response.isSuccessful) {
+                    emit(
+                        Resource.Success(
+                            response.body()?.msg ?: ""
+                        )
+                    )
+                } else {
+                    try {
+                        val jsonError = JSONObject(response.errorBody()!!.string())
+                        emit(Resource.Error(jsonError.getString("msg")))
+                    } catch (e: Exception) {
+                        emit(Resource.Error("Could not complete operation."))
+                    }
+                }
             } catch (e: Exception) {
                 if (e is IOException) emit(Resource.Error("Could not reach server."))
                 else emit(Resource.Error("Could not complete operation."))
@@ -37,12 +51,27 @@ class UserRepositoryImpl @Inject constructor(
         return flow {
             try {
                 val response = apiService.login(email, password)
-                with(response) {
-                    emit(Resource.Success(User(name, this.email, token)))
+                if (response.isSuccessful) {
+                    emit(
+                        Resource.Success(
+                            User(
+                                response.body()!!.name,
+                                response.body()!!.email,
+                                response.body()!!.token
+                            )
+                        )
+                    )
+                } else {
+                    try {
+                        val jsonError = JSONObject(response.errorBody()!!.string())
+                        emit(Resource.Error(jsonError.getString("msg")))
+                    } catch (e: Exception) {
+                        emit(Resource.Error("Could not complete operation."))
+                    }
                 }
             } catch (e: Exception) {
                 if (e is IOException) emit(Resource.Error("Could not reach server."))
-                else emit(Resource.Error("Incorrect credentials."))
+                else emit(Resource.Error("Could not complete operation."))
             }
         }
     }
