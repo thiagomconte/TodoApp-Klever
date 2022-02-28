@@ -1,8 +1,6 @@
 package com.example.todoapp.view.addedittodo.components
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -115,9 +113,7 @@ fun AddEditTodoScreen(
                 ),
                 textStyle = TextStyle(fontFamily = RobotoRegular)
             )
-            AnimatedVisibility(visible = titleError, enter = scaleIn()) {
-                ErrorText(text = stringResource(R.string.title_validator))
-            }
+            ErrorText(error = titleError, text = stringResource(R.string.title_validator))
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -144,9 +140,10 @@ fun AddEditTodoScreen(
                 ),
                 textStyle = TextStyle(fontFamily = RobotoRegular)
             )
-            AnimatedVisibility(visible = descriptionError, enter = scaleIn()) {
-                ErrorText(text = stringResource(R.string.description_validator))
-            }
+            ErrorText(
+                error = descriptionError,
+                text = stringResource(R.string.description_validator)
+            )
             if (state is ViewState.Success) {
                 Row() {
                     Checkbox(

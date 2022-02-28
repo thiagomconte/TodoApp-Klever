@@ -1,5 +1,8 @@
 package com.example.todoapp.util.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -21,13 +24,16 @@ fun BoldText(text: String) {
     Text(text, fontFamily = RobotoBold, fontWeight = FontWeight.Bold)
 }
 
+@ExperimentalAnimationApi
 @Composable
-fun ErrorText(text: String) {
-    Text(
-        text,
-        fontFamily = RobotoRegular,
-        fontSize = 12.sp,
-        modifier = Modifier.padding(horizontal = 8.dp),
-        color = Color.Red,
-    )
+fun ErrorText(error: Boolean, text: String) {
+    AnimatedVisibility(visible = error, enter = scaleIn()) {
+        Text(
+            text,
+            fontFamily = RobotoRegular,
+            fontSize = 12.sp,
+            modifier = Modifier.padding(horizontal = 8.dp),
+            color = Color.Red,
+        )
+    }
 }

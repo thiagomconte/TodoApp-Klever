@@ -1,8 +1,6 @@
 package com.example.todoapp.view.register.components
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -135,9 +133,10 @@ fun RegisterScreen(
                     ),
                     textStyle = TextStyle(fontFamily = RobotoRegular)
                 )
-                AnimatedVisibility(visible = nameError, enter = scaleIn()) {
-                    ErrorText(text = stringResource(id = R.string.name_validator))
-                }
+                ErrorText(
+                    error = nameError,
+                    text = stringResource(id = R.string.name_validator)
+                )
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
@@ -170,9 +169,10 @@ fun RegisterScreen(
                     ),
                     textStyle = TextStyle(fontFamily = RobotoRegular)
                 )
-                AnimatedVisibility(visible = emailError, enter = scaleIn()) {
-                    ErrorText(text = stringResource(id = R.string.invalid_email))
-                }
+                ErrorText(
+                    error = emailError,
+                    text = stringResource(id = R.string.invalid_email)
+                )
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -221,9 +221,10 @@ fun RegisterScreen(
                     ),
                     textStyle = TextStyle(fontFamily = RobotoRegular)
                 )
-                AnimatedVisibility(visible = passwordError, enter = scaleIn()) {
-                    ErrorText(text = stringResource(id = R.string.password_validator))
-                }
+                ErrorText(
+                    error = passwordError,
+                    text = stringResource(id = R.string.password_validator)
+                )
                 Button(
                     onClick = {
                         viewModel.validate(

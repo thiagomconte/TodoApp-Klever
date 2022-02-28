@@ -133,9 +133,7 @@ fun LoginScreen(
                     ),
                     textStyle = TextStyle(fontFamily = RobotoRegular)
                 )
-                AnimatedVisibility(visible = emailError, enter = scaleIn()) {
-                    ErrorText(text = stringResource(id = R.string.invalid_email))
-                }
+                ErrorText(emailError, text = stringResource(id = R.string.invalid_email))
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -186,7 +184,10 @@ fun LoginScreen(
                     textStyle = TextStyle(fontFamily = RobotoRegular)
                 )
                 AnimatedVisibility(visible = passwordError, enter = scaleIn()) {
-                    ErrorText(text = stringResource(id = R.string.password_required))
+                    ErrorText(
+                        error = emailError,
+                        text = stringResource(id = R.string.password_required)
+                    )
                 }
                 Button(
                     onClick = {
