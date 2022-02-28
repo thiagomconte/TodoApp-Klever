@@ -1,5 +1,8 @@
 package com.example.todoapp.view.register.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -36,6 +39,7 @@ import com.example.todoapp.view.register.RegisterEvent
 import com.example.todoapp.view.register.RegisterViewModel
 import kotlinx.coroutines.flow.collect
 
+@ExperimentalAnimationApi
 @Composable
 fun RegisterScreen(
     onPopBackStack: (UiEvent.PopBackStack) -> Unit,
@@ -131,7 +135,7 @@ fun RegisterScreen(
                     ),
                     textStyle = TextStyle(fontFamily = RobotoRegular)
                 )
-                if (nameError) {
+                AnimatedVisibility(visible = nameError, enter = scaleIn()) {
                     ErrorText(text = stringResource(id = R.string.name_validator))
                 }
                 OutlinedTextField(
@@ -166,7 +170,7 @@ fun RegisterScreen(
                     ),
                     textStyle = TextStyle(fontFamily = RobotoRegular)
                 )
-                if (emailError) {
+                AnimatedVisibility(visible = emailError, enter = scaleIn()) {
                     ErrorText(text = stringResource(id = R.string.invalid_email))
                 }
                 OutlinedTextField(
@@ -217,7 +221,7 @@ fun RegisterScreen(
                     ),
                     textStyle = TextStyle(fontFamily = RobotoRegular)
                 )
-                if (passwordError) {
+                AnimatedVisibility(visible = passwordError, enter = scaleIn()) {
                     ErrorText(text = stringResource(id = R.string.password_validator))
                 }
                 Button(

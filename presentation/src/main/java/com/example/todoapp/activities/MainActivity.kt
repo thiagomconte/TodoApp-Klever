@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import com.example.data.app.remote.TokenInterceptor
@@ -26,6 +27,7 @@ class MainActivity : ComponentActivity(), GlobalNavigatorHandler {
     private lateinit var token: String
     private lateinit var name: String
 
+    @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupToken()

@@ -1,5 +1,8 @@
 package com.example.todoapp.view.login.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -37,6 +40,7 @@ import com.example.todoapp.view.login.LoginEvent
 import com.example.todoapp.view.login.LoginViewModel
 import kotlinx.coroutines.flow.collect
 
+@ExperimentalAnimationApi
 @Composable
 fun LoginScreen(
     onNavigate: (UiEvent.Navigate) -> Unit,
@@ -129,7 +133,7 @@ fun LoginScreen(
                     ),
                     textStyle = TextStyle(fontFamily = RobotoRegular)
                 )
-                if (emailError) {
+                AnimatedVisibility(visible = emailError, enter = scaleIn()) {
                     ErrorText(text = stringResource(id = R.string.invalid_email))
                 }
                 OutlinedTextField(
@@ -181,7 +185,7 @@ fun LoginScreen(
                     ),
                     textStyle = TextStyle(fontFamily = RobotoRegular)
                 )
-                if (passwordError) {
+                AnimatedVisibility(visible = passwordError, enter = scaleIn()) {
                     ErrorText(text = stringResource(id = R.string.password_required))
                 }
                 Button(

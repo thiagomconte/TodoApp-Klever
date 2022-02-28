@@ -1,5 +1,8 @@
 package com.example.todoapp.view.addedittodo.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,6 +29,7 @@ import com.example.todoapp.view.addedittodo.AddEditTodoEvent
 import com.example.todoapp.view.addedittodo.AddEditTodoViewModel
 import kotlinx.coroutines.flow.collect
 
+@ExperimentalAnimationApi
 @Composable
 fun AddEditTodoScreen(
     onPopBackStack: () -> Unit,
@@ -111,7 +115,7 @@ fun AddEditTodoScreen(
                 ),
                 textStyle = TextStyle(fontFamily = RobotoRegular)
             )
-            if (titleError) {
+            AnimatedVisibility(visible = titleError, enter = scaleIn()) {
                 ErrorText(text = stringResource(R.string.title_validator))
             }
             OutlinedTextField(
@@ -140,7 +144,7 @@ fun AddEditTodoScreen(
                 ),
                 textStyle = TextStyle(fontFamily = RobotoRegular)
             )
-            if (descriptionError) {
+            AnimatedVisibility(visible = descriptionError, enter = scaleIn()) {
                 ErrorText(text = stringResource(R.string.description_validator))
             }
             if (state is ViewState.Success) {

@@ -1,5 +1,6 @@
 package com.example.todoapp.navgraph
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavType
@@ -18,6 +19,7 @@ import com.example.todoapp.view.login.components.LoginScreen
 import com.example.todoapp.view.register.components.RegisterScreen
 import com.example.todoapp.view.todolist.components.TodoListScreen
 
+@ExperimentalAnimationApi
 @Composable
 fun NavGraph(token: String) {
     val navController = rememberNavController()
