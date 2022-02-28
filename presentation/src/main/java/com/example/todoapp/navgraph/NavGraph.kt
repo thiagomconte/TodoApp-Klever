@@ -27,11 +27,17 @@ fun NavGraph(token: String) {
         composable(LOGIN) {
             if (token.isBlank()) {
                 LoginScreen(onNavigate = {
-                    navController.navigate(it.route)
+                    navController.navigate(it.route) {
+                        if (it.route == AUTHENTICATED) {
+                            popUpTo(0)
+                        }
+                    }
                 })
             } else {
                 LaunchedEffect(Unit) {
-                    navController.navigate(AUTHENTICATED)
+                    navController.navigate(AUTHENTICATED) {
+                        popUpTo(0)
+                    }
                 }
             }
         }
