@@ -77,7 +77,6 @@ fun RegisterScreen(
     }
     Column(
         modifier = Modifier
-            .verticalScroll(rememberScrollState())
             .fillMaxSize()
             .background(color = DarkBlue),
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -98,7 +97,9 @@ fun RegisterScreen(
                 .padding(horizontal = 16.dp),
         ) {
             Column(
-                modifier = Modifier.padding(vertical = 16.dp),
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .padding(vertical = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 OutlinedTextField(
